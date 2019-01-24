@@ -1,0 +1,727 @@
+<br> 
+<center><img src="https://i.imgur.com/hkb7Bq7.png" width="500"></center>
+
+# Session 1: Introduction to R
+
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+
+## Part A: Data Structures in R
+
+<a id='beginning'></a>
+
+Programming languages use _data structures_ to tell the computer how to organize the data we are working with. That is, data structures provided by a programming language are not the same in another one. However, in most cases, a name given to a data structure in one programming language should generally be the same in other one. It is worth keeping in mind, that a particular data structure may serve for one purpose, but not for other ones.  
+
+In everyday life, a book can be considered a data structure: we use it to store some kind of information. It has some advantages: it has a table of contents; it has numbers on the pages; you can take it with you; read it as long as you can see the words; and read it again as many times as you want. It has some disadvantages: you can lose it, and need to buy it again; it can deteriorate; get eaten by an insect; and so on. 
+
+We are going to talk about 3 data structures in R:
+
+1. [Lists.](#part1) 
+2. [Vectors.](#part2) 
+3. [Data Frame.](#part3) 
+
+**Lists** and **vectors** are simple structures; a **data frame** is a more complex one (built from the simple ones). 
+
+----
+
+<a id='part1'></a>
+
+## List
+
+Lists are containers of values. The values can be of any kind (numbers or non-numbers), and even other containers (simple or complex). If we have an spreadsheet as a reference, a row is a 'natural' list.
+
+```{r CreatingList, eval=FALSE}
+DetailStudent=list(fullName="Fred Meyers",
+                   age=40,
+                   female=FALSE)
+```
+
+The *object* 'DetailStudent' serves to store _temporarily_ the list in the computer. To name a list, use combinations of letters and numbers (never start with a number) in a meaningful way. Typing the name of the object 'DetailStudent', now a list, will give you all the contents you saved in there:
+```{r ShowingList, eval=FALSE}
+DetailStudent
+```
+Each of the elements in the list, in this case, holds a different type:
+
+* *FullName* holds characters
+* *age* holds a number
+* *female* holds a logical (Boolean) value.
+
+You can access individual elements like this:
+
+```{r AccessingList, eval=FALSE}
+DetailStudent[[1]]
+# or
+DetailStudent[['fullName']]
+# or
+DetailStudent$fullName
+```
+
+You can alter the list using:
+```{r AlteringLists, eval=FALSE}
+DetailStudent$fullName='Alfred Mayer'
+# Then:
+DetailStudent
+```
+
+You can add an element like this:
+```{r addElemList, eval=FALSE}
+DetailStudent$city='Seattle'
+
+# show:
+DetailStudent
+```
+
+And destroy it by **NULL**ing it, like this:
+```{r destroyElementList, eval=FALSE}
+DetailStudent$city=NULL # do you like: DetailStudent[[4]]=NULL
+```
+
+
+[Go to section beginning](#beginning)
+
+----
+
+<a id='part2'></a> 
+
+## Vectors
+Vectors are also containers of values. The values should be of __only one type__ (**R** may alter it silently, otherwise). If we have an spreadsheet as a reference, a column can be a natural vector.
+
+```{r CreatingVectors, eval=FALSE}
+names=c("Fred Meyers","Sarah Jones", "Lou Ferrigno","Sky Turner")
+ages=c(40,35, 60,77)
+female=c(F,T,T,T)
+```
+
+Each *object* is holding temporarily a vector. Use combinations of letters and numbers (never start with a number) in a meaningful way to name a vector. When typing the name of the object you will get all the contents:
+```{r ShowingVector, eval=FALSE}
+names
+ages
+female
+```
+
+Each vector is composed of elements with the same type. If you want to access individual elements, you can write:
+
+```{r AccessingVector, eval=FALSE}
+names[1]
+# or
+ages[1]
+# or
+female[1]
+```
+
+You can alter the list using:
+```{r AlteringVector, eval=FALSE}
+names[1]='Alfred Mayer'
+# Then:
+names[1]
+```
+
+You can add an element to a vector like this:
+```{r addElemVec, eval=FALSE}
+elements=c(1,2,3)
+elements=c(elements,40) 
+elements
+```
+
+You can NOT delete it with NULL:
+```{r delElemVec, results='asis', echo=TRUE, eval=FALSE}
+elements[4]=NULL
+```
+
+Just do this:
+```{r delElemVecOK, eval=FALSE}
+elements=elements[-4] # vector shrinks
+```
+
+Another important operation is to get rid of repeated values:
+```{r uniqueVals, eval=FALSE}
+weekdays=c('M','T','W','Th','S','Su','Su')
+weekdays
+```
+
+Then, use the function _unique_:
+```{r uniqueValsOK, eval=FALSE}
+unique(weekdays)
+```
+
+
+Vector elements can have 'names', but their contents still need to be homogeneous:
+```{r TroublesomeVector, eval=FALSE}
+newAges=c("Sam"=50, "Paul"=30, "Name"="Jim")
+newAges
+```
+
+As you saw above, the presence of "Jim" as an element, *coerced* the other values to *characters* (the _numbers_ are now _text_, the symbol **''** is used to show that). Eliminating that value will give an appropriate vector:
+
+```{r CorrectingVector, eval=FALSE}
+newAgesGood=c("Sam"=50, "Paul"=30)
+newAgesGood
+```
+
+
+[Go to section beginning](#beginning)
+
+----
+
+<a id='part3'></a>
+
+
+## Data Frames
+
+Data frames are containers of values. You use a data frame because you need to combine what vectors and lists do. The most common analogy is a data table like  the ones in a __spreadsheet__: 
+
+```{r CreatingDF, eval=FALSE}
+# VECTORS
+names=c("Qing", "Françoise", "Raúl", "Bjork")
+ages=c(32,33,28,30)
+country=c("China", "Senegal", "Spain", "Norway")
+education=c("Bach", "Bach", "Master", "PhD")
+
+```
+
+Then, we can create a data frame:
+
+```{r reCreateDFStrings, eval=FALSE}
+#DF as a "List" of vectors:
+students=data.frame(names,ages,country,education,
+                    stringsAsFactors=F)
+str(students)
+```
+
+
+
+The function _str_ showed you the dimensions of the structure (number of rows and columns); R has alternative ways to get the dimensions:
+```{r, eval=FALSE}
+# rows and columns
+dim(students)
+
+#also
+nrow(students)  # we have ncol() too!
+
+# and very important:
+length(students)
+```
+
+We know _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
+```{r, eval=FALSE}
+head(students,2) # top 2
+```
+Of course, we have __tail__:
+```{r, eval=FALSE}
+tail(students,2) # last 2
+```
+
+
+
+You can access data frames elements in an easy way:
+```{r accessDF, eval=FALSE}
+# one particular column
+students$names
+```
+
+```{r, eval=FALSE}
+# two columns using positions
+students[,c(1,4)]
+```
+
+```{r, eval=FALSE}
+## two columns using names of columns
+students[,c('names','education')]
+```
+
+
+Using positions is the best way to get several columns:
+```{r getColsDF, eval=FALSE}
+students[,c(1:3)] # ':' is used to facilitate 'from-to' sequence
+```
+
+Of course, you can create **subsets**:
+```{r subsetDF, eval=FALSE}
+studentsNoEd=students[,c(1:3)]
+studentsNoEd
+```
+
+You can modify any values in a data frame. Let me create a copy of this data frame to play with:
+```{r copyDF, eval=FALSE}
+studentsCopy=students # I make a copy to avoid altering my original dataframe
+```
+
+Now, I can change the age of Qing to 23 replacing 32:
+```{r modifyDF, eval=FALSE}
+studentsCopy[1,2]=23
+# change is immediate! (you will not get any warning)
+studentsCopy[1,]
+```
+
+We can reset a column as **missing**:
+```{r missingColDF, eval=FALSE}
+studentsCopy$country=NA
+```
+
+And, delete a column by **null**ing it:
+```{r deleteColDF, eval=FALSE}
+studentsCopy$ages=NULL
+```
+
+Then, our copy looks like this:
+```{r copyDfShow, eval=FALSE}
+studentsCopy
+```
+
+
+### Querying Data Frames:
+
+Once you have a data frame you can start writing interesting queries (notice the use of _commas_):
+
+**Who is the oldest in the group?**
+```{r query1, eval=FALSE}
+students[which.max(students$ages),] 
+```
+
+**Who is the youngest in the group?**
+```{r query2, eval=FALSE}
+students[which.min(students$ages),] 
+```
+
+**Who is above 30 and from China?**
+```{r query3, eval=FALSE}
+students[students$ages>30 & students$country=='China',] 
+```
+
+
+**Who is not from Norway?**
+```{r query4, eval=FALSE}
+students[students$country!="Norway",] 
+```
+
+**Who is from one of these?**
+```{r query5, eval=FALSE}
+DangeourousPlaces=c("Peru", "USA", "Spain")
+students[students$country %in% DangeourousPlaces,] 
+```
+
+check:
+
+```{r, eval=FALSE}
+students[!students$country %in% DangeourousPlaces,] # the opposite
+```
+
+
+**The education level of the one above 30 and from China?**
+```{r query6, eval=FALSE}
+students[students$ages>30 & students$country=='China',]$education 
+```
+
+**Show me the data ordered by age (decreasing)?**
+```{r query7, eval=FALSE}
+students[order(-students$ages),]
+```
+
+
+_____
+
+
+## Part B: Control of Execution in R
+
+<a id='beginningb'></a>
+
+The concept of control of execution is a key component when writing code. For that, I will introduce three main schemes:
+
+1. [Conditional Execution.](#part1b) 
+2. [Loops.](#part2b) 
+
+----
+
+<a id='part1b'></a>
+
+## Conditional Execution
+
+This is how you tell the computer what part of a code to execute, depending if an event is true or false.
+```{r conditionalExec, eval=FALSE}
+value=-100
+
+#condition
+if (value >= 0){ 
+  # what to do if condition is TRUE
+  rootValue=sqrt(value)
+  print (rootValue)
+} else {  
+  # what to do if condition is FALSE
+  print('Sorry, I do not compute square roots of negative numbers')
+}
+```
+Notice the use of **parenthesis** in the condition. Also, the use of **{}**  to enclose the commands (Python does not need this, either). You do not need those curly braces if you have just _one_ command after the condition. If you omitted the whole **else{}** section, the program will still run, but the program will not get a message when the input is invalid.
+
+
+----
+
+<a id='part2b'></a> 
+
+## Loops
+This is how you tell the computer to do something many times (and stop when it has to):
+```{r loopPrint, eval=FALSE}
+values=c(9,25,100)
+for (value in values){ # do this for each value in values
+  print(sqrt(value))
+}
+```
+
+You do not need to show each result, you could save the results.
+```{r loopSave, eval=FALSE}
+values=c(9,25,100)
+rootValues=c() # empty vector
+for (value in values){
+  rootValues=c(rootValues,sqrt(value)) # updating vector
+}
+# to see the results:
+rootValues
+```
+
+It is evident that, combining *loops* and *control of execution*, we can make better programs. For example, this code is not controlling well the process:
+
+```{r loopSave2, eval=FALSE}
+values=c(9,25,-100)
+rootValues=c()
+for (value in values){
+  rootValues=c(rootValues,sqrt(value))
+}
+# to see the results:
+rootValues
+```
+
+In the last result, R decided what to do when a negative value was input (it also sent a warning). This one does a better job:
+
+```{r loopSave3, eval=FALSE}
+values=c(9,25,-100,144,-72)
+rootValues=c()
+for (value in values){
+  if (value >=0){
+    rootValues=c(rootValues,sqrt(value))
+  }else {
+    print('We added a missing value, negative input detected')
+    rootValues=c(rootValues,NA)
+  }
+}
+# to see the results:
+rootValues
+```
+
+We are producing an ouput with the same size as input. If we omit the **else** structure, we will produce an output with smaller size than the input. 
+
+You can also use **break** when you consider the execution should stop:
+
+```{r break, eval=FALSE}
+values=c(9,25,-100,144,-72)
+rootValues=c()
+for (value in values){
+  if (value <0){
+    print('We need to stop, invalid value detected')
+    break
+  }
+  rootValues=c(rootValues,sqrt(value))
+}
+rootValues
+```
+
+The code above halted the program. 
+
+You can use **next** when you consider the execution should continue:
+
+```{r NEXT, eval=FALSE}
+values=list(9,NA,'1000',-100,144,-72)
+for (value in values){
+  if (is.na(value)){
+    print('missing value as input')
+    next
+  }
+  
+  if (value <0){
+    print('negative value as input')
+    next
+  }
+  
+  if (is.character(value)){
+    print('char as input')
+    next
+  }
+  rootVal=sqrt(value)
+  print(paste(rootVal,'is the root of ',value))
+}
+
+
+```
+
+The function **is.na** tests if a value represents a missing value in R. 
+
+
+
+Sometimes, you want to count some particular values:
+```{r count, eval=FALSE}
+values=c(9,25,-100,144,-72)
+counterOfInvalids=0 # initializing counter
+for (value in values){
+  if (value < 0){
+    counterOfInvalids=counterOfInvalids+1 #updating counter
+  }
+}
+counterOfInvalids
+```
+
+You may want to save particular positions:
+
+```{r savePOs, eval=FALSE}
+values=c(9,25,-100,144,-72)
+positionInvalids=c()
+currentPosition=1  # initial position
+for (value in values){
+  if (value < 0){
+    positionInvalids=c(positionInvalids,currentPosition)
+  }
+  currentPosition=currentPosition+1 # becareful WHERE you put the 'counter'
+}
+positionInvalids 
+
+```
+
+Testing:
+
+```{r, eval=FALSE}
+values[positionInvalids]
+```
+
+
+[Go to section beginning](#beginningb)
+
+
+____
+
+<a id='beginningc'></a>
+
+## Part C: Working with data sets
+
+
+### Collecting data from proprietary software
+
+Let's start with data from SPSS and STATA, very common in public policy schools. To work with these kind of files, we will use the package **haven**:
+```{r, eval=FALSE}
+#install.packages("haven")
+library(haven)
+```
+
+Let me open the SPSS file first, these data come from the American National Election Studies survey (ANES):
+```{r, eval=FALSE}
+folder="data"
+fileName="anes_timeseries_2012.sav"
+fileToRead=file.path(folder,fileName)
+dataSpss=read_sav(fileToRead)
+```
+
+So far, we have the data but it is not a data frame, but a tibble, a similar structure created by *haven*. This is a rather big file, so let me select some variables ("libcpre_self","libcpo_self"), a couple of questions pre and post elections asking respondents to place themselves on a seven point scale ranging from ‘extremely liberal’ to ‘extremely conservative’) and create a data frame with them: 
+
+```{r, eval=FALSE}
+varsOfInterest=c("libcpre_self","libcpo_self")
+dataSpssSub=as.data.frame(dataSpss)[varsOfInterest]
+head(dataSpssSub)
+```
+
+A similar process is followed to get a STATA file:
+```{r, eval=FALSE}
+fileName="anes_timeseries_2012.dta"
+fileToRead=file.path(folder,fileName)
+dataStata=read_dta(fileToRead)
+dataStataSub=as.data.frame(dataStata)[varsOfInterest]
+head(dataStataSub)
+```
+
+
+### Collecting your ad-hoc data
+
+Let me assume you have collected some data using Google Forms. The answers to your forms are saved in an spreadsheet, which you should publish as a CSV file. Then, I can read it like this:
+```{r, eval=FALSE}
+
+require(RCurl)
+# obtained from google docs:
+link='https://docs.google.com/spreadsheets/d/1_zkjabqNMmetGvn77L2UTZ26QsKbLo4WNIh0s0fWnOQ/pub?output=csv'
+
+# getting info
+myCsv <- getURL(link)
+# to change column names:
+namesOfCols=c('timeStamp','name','sex','age','bornIn','workingStatus')
+
+# parsing as csv
+myData=read.csv(textConnection(myCsv),col.names=namesOfCols)
+
+head(myData)
+
+```
+
+
+### Collecting data from APIs
+
+There are organizations, public and private, that have an open data policy that allows people to access their repositories dynamically. You can get that data in CSV format if available, but the data is always in  XML or JSON format, which are data containers that store data in an *associative array* structure. R could open that data using lists, but we will transform it into a data frame. Let me get the data about 9-1-1 Police reponses from [Seattle](https://dev.socrata.com/foundry/data.seattle.gov/ttdd-vwfw):
+
+```{r, eval=FALSE}
+#install.packages("jsonlite")
+library(jsonlite) 
+endPoint="https://data.seattle.gov/resource/ttdd-vwfw.json" 
+data911 = fromJSON(endPoint)
+head(data911)
+```
+
+[Go to section beginning](#beginningc)
+
+
+### Collecting data by scraping
+
+We are going to get the data from a table from this [wikipage](https://en.wikipedia.org/wiki/List_of_freedom_indices)
+
+The data we have collected may have several issues we need to identify:
+
+
+```{r}
+library(XML)
+library(RCurl)
+
+# URL
+wiki="https://en.wikipedia.org/wiki/" 
+link = "List_of_freedom_indices" 
+
+# Data
+wikiLinkContents = getURL(paste0(wiki,link)) 
+IDXs = readHTMLTable(wikiLinkContents,
+                     header = TRUE,
+                     stringsAsFactors=FALSE)[[2]]
+head(IDXs)
+```
+
+Well, the first thing we will deal with are *footnotes* in the titles. Let's solve that:
+```{r}
+#These are the column names:
+names(IDXs)
+```
+
+Let's use a regular expression to deal with this. This is how it works:
+```{r}
+# a foot note is like:
+# one opening bracket: \\[ 
+# one or more numbers \\d+ 
+# one closing bracket \\]
+# one or more spaces: \\s+ 
+# OR: | 
+pattern='\\s+|\\d+|\\[|\\]' 
+nothing=''
+test='abc xy [1968] ' 
+gsub(pattern,nothing,test)
+```
+Then, to get clean column names:
+```{r}
+names(IDXs)=gsub(pattern,nothing,names(IDXs))
+
+# now:
+names(IDXs)
+```
+
+Let's see some rows:
+```{r}
+head(IDXs,10)
+```
+
+Then, we could request a frequency of each column. We need another package to use a function to get a frequency table for each column:
+```{r}
+library(plyr) # install it first 
+count(IDXs,'FreedomintheWorld')
+count(IDXs,'IndexofEconomicFreedom')
+count(IDXs,'PressFreedomIndex')
+```
+
+The second messy element is here, we have the missing values coded as **_n/a_**. We need replace those values with 'NA', the way R identifies missingness. R can achieve that this way:
+```{r}
+IDXs[IDXs=='n/a']=NA # this is an actual change to IDXs
+head(IDXs,10)
+```
+
+
+```{r}
+levels(IDXs$FreedomintheWorld)
+```
+```{r}
+str(IDXs)
+```
+
+```{r}
+names(table(IDXs$FreedomintheWorld))
+```
+```{r}
+theLevels=names(table(IDXs$FreedomintheWorld))
+IDXs$FreedomintheWorld=factor(IDXs$FreedomintheWorld,
+                              levels = rev(theLevels),
+                              labels = rev(theLevels),
+                              ordered = T)
+```
+
+```{r}
+theLevels=names(table(IDXs$IndexofEconomicFreedom))
+IDXs$IndexofEconomicFreedom=factor(IDXs$IndexofEconomicFreedom,
+                              levels = rev(theLevels),
+                              labels = rev(theLevels),
+                              ordered = T)
+```
+
+```{r}
+theLevels=names(table(IDXs$PressFreedomIndex))
+IDXs$PressFreedomIndex=factor(IDXs$PressFreedomIndex,
+                              levels = rev(theLevels),
+                              labels = rev(theLevels),
+                              ordered = T)
+```
+
+```{r}
+theLevels=names(table(IDXs$DemocracyIndex))
+IDXs$DemocracyIndex=factor(IDXs$DemocracyIndex,
+                              levels = rev(theLevels),
+                              labels = rev(theLevels),
+                              ordered = T)
+```
+
+
+```{r}
+str(IDXs)
+```
+
+```{r}
+median(IDXs$DemocracyIndex)
+```
+
+
+```{r}
+library(DescTools)
+DescTools::Median(IDXs$DemocracyIndex,na.rm=T)
+```
+```{r}
+DescTools::Freq(IDXs$PressFreedomIndex,na.rm=T)
+```
+```{r}
+boxplot(IDXs$PressFreedomIndex)
+```
+
+```{r}
+library(ggplot2)
+labels=rev(names(table(IDXs$PressFreedomIndex)))
+bp=ggplot(IDXs, aes(x=1, y=as.numeric(IDXs$PressFreedomIndex)))
+box1=bp +geom_boxplot() 
+
+box1 + scale_y_continuous(labels= labels) +scale_x_continuous(breaks = NULL) +labs(y=NULL)
+```
+
+
+```{r}
+barplot(table(IDXs$PressFreedomIndex),las=1,cex.names = 0.4)
+```
+
+```{r}
+IDXs$PressFreedomIndexN=as.numeric(IDXs$PressFreedomIndex)
+boxplot()
+```
+
