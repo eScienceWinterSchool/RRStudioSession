@@ -132,8 +132,6 @@ $(document).ready(function () {
 <div id="part-a-data-structures-in-r" class="section level2">
 <h2>Part A: Data Structures in R</h2>
 <p><a id="beginning"></a></p>
-<p>Programming languages use <em>data structures</em> to tell the computer how to organize the data we are working with. That is, data structures provided by a programming language are not the same in another one. However, in most cases, a name given to a data structure in one programming language should generally be the same in other one. It is worth keeping in mind, that a particular data structure may serve for one purpose, but not for other ones.</p>
-<p>In everyday life, a book can be considered a data structure: we use it to store some kind of information. It has some advantages: it has a table of contents; it has numbers on the pages; you can take it with you; read it as long as you can see the words; and read it again as many times as you want. It has some disadvantages: you can lose it, and need to buy it again; it can deteriorate; get eaten by an insect; and so on.</p>
 <p>We are going to talk about 3 data structures in R:</p>
 <ol style="list-style-type: decimal">
 <li><a href="#part1">Lists.</a></li>
@@ -159,10 +157,10 @@ $(document).ready(function () {
 <li><em>female</em> holds a logical (Boolean) value.</li>
 </ul>
 <p>You can access individual elements like this:</p>
-<pre class="r"><code>DetailStudent[[1]]
-# or
-DetailStudent[['fullName']]
-# or
+<pre class="r"><code>DetailStudent[[1]]</code></pre>
+<pre class="r"><code># or
+DetailStudent[['fullName']]</code></pre>
+<pre class="r"><code># or
 DetailStudent$fullName</code></pre>
 <p>You can alter the list using:</p>
 <pre class="r"><code>DetailStudent$fullName='Alfred Mayer'
@@ -224,7 +222,7 @@ newAgesGood</code></pre>
 </div>
 <div id="data-frames" class="section level2">
 <h2>Data Frames</h2>
-<p>Data frames are containers of values. You use a data frame because you need to combine what vectors and lists do. The most common analogy is a data table like the ones in a <strong>spreadsheet</strong>:</p>
+<p>Data frames are more complex containers of values. The most common analogy is a data table like the ones in a <strong>spreadsheet</strong>:</p>
 <pre class="r"><code># VECTORS
 names=c(&quot;Qing&quot;, &quot;Françoise&quot;, &quot;Raúl&quot;, &quot;Bjork&quot;)
 ages=c(32,33,28,30)
@@ -232,22 +230,25 @@ country=c(&quot;China&quot;, &quot;Senegal&quot;, &quot;Spain&quot;, &quot;Norwa
 education=c(&quot;Bach&quot;, &quot;Bach&quot;, &quot;Master&quot;, &quot;PhD&quot;)</code></pre>
 <p>Then, we can create a data frame:</p>
 <pre class="r"><code>#DF as a &quot;List&quot; of vectors:
-students=data.frame(names,ages,country,education,
+students=list('names'=names,'ages'=ages,'country'=country,'education'=education,
                     stringsAsFactors=F)
-str(students)</code></pre>
+students</code></pre>
+<p>Then,</p>
+<pre class="r"><code>students=data.frame(students,stringsAsFactors = F)
+students</code></pre>
+<p>Take a look at structure:</p>
+<pre class="r"><code>str(students)</code></pre>
 <p>The function <em>str</em> showed you the dimensions of the structure (number of rows and columns); R has alternative ways to get the dimensions:</p>
 <pre class="r"><code># rows and columns
-dim(students)
-
-#also
-nrow(students)  # we have ncol() too!
-
-# and very important:
+dim(students)</code></pre>
+<pre class="r"><code>#also
+nrow(students)  # we have ncol() too!</code></pre>
+<pre class="r"><code># and very important:
 length(students)</code></pre>
-<p>We know <em>length</em> works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions <strong>head()</strong>, which is very useful to show the top rows of the dataframe:</p>
-<pre class="r"><code>head(students,2) # top 2</code></pre>
+<p>The function <em>length</em> works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions <strong>head()</strong>, which is very useful to show the top rows of the dataframe:</p>
+<pre class="r"><code>head(students) </code></pre>
 <p>Of course, we have <strong>tail</strong>:</p>
-<pre class="r"><code>tail(students,2) # last 2</code></pre>
+<pre class="r"><code>tail(students) </code></pre>
 <p>You can access data frames elements in an easy way:</p>
 <pre class="r"><code># one particular column
 students$names</code></pre>
@@ -394,29 +395,61 @@ for (value in values){
   print(paste(rootVal,'is the root of ',value))
 }</code></pre>
 <p>The function <strong>is.na</strong> tests if a value represents a missing value in R.</p>
-<p>Sometimes, you want to count some particular values:</p>
-<pre class="r"><code>values=c(9,25,-100,144,-72)
-counterOfInvalids=0 # initializing counter
-for (value in values){
-  if (value &lt; 0){
-    counterOfInvalids=counterOfInvalids+1 #updating counter
-  }
-}
-counterOfInvalids</code></pre>
-<p>You may want to save particular positions:</p>
-<pre class="r"><code>values=c(9,25,-100,144,-72)
-positionInvalids=c()
-currentPosition=1  # initial position
-for (value in values){
-  if (value &lt; 0){
-    positionInvalids=c(positionInvalids,currentPosition)
-  }
-  currentPosition=currentPosition+1 # becareful WHERE you put the 'counter'
-}
-positionInvalids </code></pre>
-<p>Testing:</p>
-<pre class="r"><code>values[positionInvalids]</code></pre>
 <p><a href="#beginningb">Go to section beginning</a></p>
+<hr />
+<p><a id="beginningc"></a></p>
+</div>
+<div id="part-c-working-with-data-sets" class="section level2">
+<h2>Part C: Working with data sets</h2>
+<div id="collecting-data-from-proprietary-software" class="section level3">
+<h3>Collecting data from proprietary software</h3>
+<p>Let’s start with data from SPSS and STATA, very common in public policy schools. To work with these kind of files, we will use the package <strong>haven</strong>:</p>
+<pre class="r"><code>#install.packages(&quot;haven&quot;)
+library(haven)</code></pre>
+<p>Let me open the SPSS file first, these data come from the American National Election Studies survey (ANES):</p>
+<pre class="r"><code>folder=&quot;data&quot;
+fileName=&quot;anes_timeseries_2012.sav&quot;
+fileToRead=file.path(folder,fileName)
+dataSpss=read_sav(fileToRead)</code></pre>
+<p>So far, we have the data but it is not a data frame, but a tibble, a similar structure created by <em>haven</em>. This is a rather big file, so let me select some variables (“libcpre_self”,“libcpo_self”), a couple of questions pre and post elections asking respondents to place themselves on a seven point scale ranging from ‘extremely liberal’ to ‘extremely conservative’) and create a data frame with them:</p>
+<pre class="r"><code>varsOfInterest=c(&quot;libcpre_self&quot;,&quot;libcpo_self&quot;)
+dataSpssSub=as.data.frame(dataSpss)[varsOfInterest]
+head(dataSpssSub)</code></pre>
+<p>A similar process is followed to get a STATA file:</p>
+<pre class="r"><code>fileName=&quot;anes_timeseries_2012.dta&quot;
+fileToRead=file.path(folder,fileName)
+dataStata=read_dta(fileToRead)
+dataStataSub=as.data.frame(dataStata)[varsOfInterest]
+head(dataStataSub)</code></pre>
+</div>
+<div id="collecting-your-ad-hoc-data" class="section level3">
+<h3>Collecting your ad-hoc data</h3>
+<p>Let’s collect some data using <a href="https://goo.gl/forms/SLnJY1noQSvZGbAv1">Google Forms</a>.</p>
+<p>The answers to your form are saved in an spreadsheet, which you should publish as a CSV file. Then, I can read it like this:</p>
+<pre class="r"><code>require(RCurl)
+# obtained from google docs:
+link='link'
+
+# getting info
+myCsv &lt;- getURL(link)
+# to change column names:
+namesOfCols=c('timeStamp','name','surname','sex','age','bornIn','workingStatus')
+
+# parsing as csv
+myData=read.csv(textConnection(myCsv),col.names=namesOfCols)
+
+head(myData)</code></pre>
+</div>
+<div id="collecting-data-from-apis" class="section level3">
+<h3>Collecting data from APIs</h3>
+<p>There are organizations, public and private, that have an open data policy that allows people to access their repositories dynamically. You can get that data in CSV format if available, but the data is always in XML or JSON format, which are data containers that store data in an <em>associative array</em> structure. R could open that data using lists, but we will transform it into a data frame. Let me get the data about 9-1-1 Police reponses from <a href="https://dev.socrata.com/foundry/data.seattle.gov/ttdd-vwfw">Seattle</a>:</p>
+<pre class="r"><code>#install.packages(&quot;jsonlite&quot;)
+library(jsonlite) 
+endPoint=&quot;https://data.seattle.gov/resource/ttdd-vwfw.json&quot; 
+data911 = fromJSON(endPoint)
+head(data911)</code></pre>
+<p><a href="#beginningc">Go to section beginning</a></p>
+</div>
 </div>
 </div>
 

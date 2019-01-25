@@ -12,9 +12,7 @@ _____
 
 <a id='beginning'></a>
 
-Programming languages use _data structures_ to tell the computer how to organize the data we are working with. That is, data structures provided by a programming language are not the same in another one. However, in most cases, a name given to a data structure in one programming language should generally be the same in other one. It is worth keeping in mind, that a particular data structure may serve for one purpose, but not for other ones.  
-
-In everyday life, a book can be considered a data structure: we use it to store some kind of information. It has some advantages: it has a table of contents; it has numbers on the pages; you can take it with you; read it as long as you can see the words; and read it again as many times as you want. It has some disadvantages: you can lose it, and need to buy it again; it can deteriorate; get eaten by an insect; and so on. 
+ 
 
 We are going to talk about 3 data structures in R:
 
@@ -52,8 +50,14 @@ You can access individual elements like this:
 
 ```{r AccessingList, eval=FALSE}
 DetailStudent[[1]]
+```
+
+```{r, eval=FALSE}
 # or
 DetailStudent[['fullName']]
+```
+
+```{r, eval=FALSE}
 # or
 DetailStudent$fullName
 ```
@@ -170,7 +174,7 @@ newAgesGood
 
 ## Data Frames
 
-Data frames are containers of values. You use a data frame because you need to combine what vectors and lists do. The most common analogy is a data table like  the ones in a __spreadsheet__: 
+Data frames are more complex containers of values. The most common analogy is a data table like  the ones in a __spreadsheet__: 
 
 ```{r CreatingDF, eval=FALSE}
 # VECTORS
@@ -185,32 +189,54 @@ Then, we can create a data frame:
 
 ```{r reCreateDFStrings, eval=FALSE}
 #DF as a "List" of vectors:
-students=data.frame(names,ages,country,education,
+students=list('names'=names,'ages'=ages,'country'=country,'education'=education,
                     stringsAsFactors=F)
-str(students)
+students
 ```
 
+Then,
+
+```{r, eval=FALSE}
+students=data.frame(students,stringsAsFactors = F)
+students
+```
+
+Take a look at structure:
+```{r, eval=FALSE}
+str(students)
+```
 
 
 The function _str_ showed you the dimensions of the structure (number of rows and columns); R has alternative ways to get the dimensions:
 ```{r, eval=FALSE}
 # rows and columns
 dim(students)
+```
 
+```{r, eval=FALSE}
 #also
 nrow(students)  # we have ncol() too!
+
+```
+
+```{r, eval=FALSE}
 
 # and very important:
 length(students)
 ```
 
-We know _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
+
+
+The function _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
+
 ```{r, eval=FALSE}
-head(students,2) # top 2
+head(students) 
 ```
+
 Of course, we have __tail__:
+
 ```{r, eval=FALSE}
-tail(students,2) # last 2
+tail(students) 
 ```
 
 
@@ -457,41 +483,6 @@ The function **is.na** tests if a value represents a missing value in R.
 
 
 
-Sometimes, you want to count some particular values:
-```{r count, eval=FALSE}
-values=c(9,25,-100,144,-72)
-counterOfInvalids=0 # initializing counter
-for (value in values){
-  if (value < 0){
-    counterOfInvalids=counterOfInvalids+1 #updating counter
-  }
-}
-counterOfInvalids
-```
-
-You may want to save particular positions:
-
-```{r savePOs, eval=FALSE}
-values=c(9,25,-100,144,-72)
-positionInvalids=c()
-currentPosition=1  # initial position
-for (value in values){
-  if (value < 0){
-    positionInvalids=c(positionInvalids,currentPosition)
-  }
-  currentPosition=currentPosition+1 # becareful WHERE you put the 'counter'
-}
-positionInvalids 
-
-```
-
-Testing:
-
-```{r, eval=FALSE}
-values[positionInvalids]
-```
-
-
 [Go to section beginning](#beginningb)
 
 
@@ -511,6 +502,7 @@ library(haven)
 ```
 
 Let me open the SPSS file first, these data come from the American National Election Studies survey (ANES):
+
 ```{r, eval=FALSE}
 folder="data"
 fileName="anes_timeseries_2012.sav"
@@ -538,17 +530,19 @@ head(dataStataSub)
 
 ### Collecting your ad-hoc data
 
-Let me assume you have collected some data using Google Forms. The answers to your forms are saved in an spreadsheet, which you should publish as a CSV file. Then, I can read it like this:
+Let's collect some data using [Google Forms](https://goo.gl/forms/SLnJY1noQSvZGbAv1). 
+
+The answers to your form are saved in an spreadsheet, which you should publish as a CSV file. Then, I can read it like this:
 ```{r, eval=FALSE}
 
 require(RCurl)
 # obtained from google docs:
-link='https://docs.google.com/spreadsheets/d/1_zkjabqNMmetGvn77L2UTZ26QsKbLo4WNIh0s0fWnOQ/pub?output=csv'
+link='link'
 
 # getting info
 myCsv <- getURL(link)
 # to change column names:
-namesOfCols=c('timeStamp','name','sex','age','bornIn','workingStatus')
+namesOfCols=c('timeStamp','name','surname','sex','age','bornIn','workingStatus')
 
 # parsing as csv
 myData=read.csv(textConnection(myCsv),col.names=namesOfCols)
@@ -573,155 +567,4 @@ head(data911)
 [Go to section beginning](#beginningc)
 
 
-### Collecting data by scraping
-
-We are going to get the data from a table from this [wikipage](https://en.wikipedia.org/wiki/List_of_freedom_indices)
-
-The data we have collected may have several issues we need to identify:
-
-
-```{r}
-library(XML)
-library(RCurl)
-
-# URL
-wiki="https://en.wikipedia.org/wiki/" 
-link = "List_of_freedom_indices" 
-
-# Data
-wikiLinkContents = getURL(paste0(wiki,link)) 
-IDXs = readHTMLTable(wikiLinkContents,
-                     header = TRUE,
-                     stringsAsFactors=FALSE)[[2]]
-head(IDXs)
-```
-
-Well, the first thing we will deal with are *footnotes* in the titles. Let's solve that:
-```{r}
-#These are the column names:
-names(IDXs)
-```
-
-Let's use a regular expression to deal with this. This is how it works:
-```{r}
-# a foot note is like:
-# one opening bracket: \\[ 
-# one or more numbers \\d+ 
-# one closing bracket \\]
-# one or more spaces: \\s+ 
-# OR: | 
-pattern='\\s+|\\d+|\\[|\\]' 
-nothing=''
-test='abc xy [1968] ' 
-gsub(pattern,nothing,test)
-```
-Then, to get clean column names:
-```{r}
-names(IDXs)=gsub(pattern,nothing,names(IDXs))
-
-# now:
-names(IDXs)
-```
-
-Let's see some rows:
-```{r}
-head(IDXs,10)
-```
-
-Then, we could request a frequency of each column. We need another package to use a function to get a frequency table for each column:
-```{r}
-library(plyr) # install it first 
-count(IDXs,'FreedomintheWorld')
-count(IDXs,'IndexofEconomicFreedom')
-count(IDXs,'PressFreedomIndex')
-```
-
-The second messy element is here, we have the missing values coded as **_n/a_**. We need replace those values with 'NA', the way R identifies missingness. R can achieve that this way:
-```{r}
-IDXs[IDXs=='n/a']=NA # this is an actual change to IDXs
-head(IDXs,10)
-```
-
-
-```{r}
-levels(IDXs$FreedomintheWorld)
-```
-```{r}
-str(IDXs)
-```
-
-```{r}
-names(table(IDXs$FreedomintheWorld))
-```
-```{r}
-theLevels=names(table(IDXs$FreedomintheWorld))
-IDXs$FreedomintheWorld=factor(IDXs$FreedomintheWorld,
-                              levels = rev(theLevels),
-                              labels = rev(theLevels),
-                              ordered = T)
-```
-
-```{r}
-theLevels=names(table(IDXs$IndexofEconomicFreedom))
-IDXs$IndexofEconomicFreedom=factor(IDXs$IndexofEconomicFreedom,
-                              levels = rev(theLevels),
-                              labels = rev(theLevels),
-                              ordered = T)
-```
-
-```{r}
-theLevels=names(table(IDXs$PressFreedomIndex))
-IDXs$PressFreedomIndex=factor(IDXs$PressFreedomIndex,
-                              levels = rev(theLevels),
-                              labels = rev(theLevels),
-                              ordered = T)
-```
-
-```{r}
-theLevels=names(table(IDXs$DemocracyIndex))
-IDXs$DemocracyIndex=factor(IDXs$DemocracyIndex,
-                              levels = rev(theLevels),
-                              labels = rev(theLevels),
-                              ordered = T)
-```
-
-
-```{r}
-str(IDXs)
-```
-
-```{r}
-median(IDXs$DemocracyIndex)
-```
-
-
-```{r}
-library(DescTools)
-DescTools::Median(IDXs$DemocracyIndex,na.rm=T)
-```
-```{r}
-DescTools::Freq(IDXs$PressFreedomIndex,na.rm=T)
-```
-```{r}
-boxplot(IDXs$PressFreedomIndex)
-```
-
-```{r}
-library(ggplot2)
-labels=rev(names(table(IDXs$PressFreedomIndex)))
-bp=ggplot(IDXs, aes(x=1, y=as.numeric(IDXs$PressFreedomIndex)))
-box1=bp +geom_boxplot() 
-
-box1 + scale_y_continuous(labels= labels) +scale_x_continuous(breaks = NULL) +labs(y=NULL)
-```
-
-
-```{r}
-barplot(table(IDXs$PressFreedomIndex),las=1,cex.names = 0.4)
-```
-
-```{r}
-IDXs$PressFreedomIndexN=as.numeric(IDXs$PressFreedomIndex)
-boxplot()
-```
 
