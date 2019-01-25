@@ -564,6 +564,270 @@ data911 = fromJSON(endPoint)
 head(data911)
 ```
 
+
+Once you have a data set, you can start working!
+
+
+
+## Comandos básicos en R para exploración Univariada:
+
+```{r}
+# carga de datos
+link="https://github.com/eScienceWinterSchool/RRStudioSession/raw/master/data/indexes.csv"
+dataidx=read.csv(link, 
+                 stringsAsFactors = T)
+
+# ver primeras filas los datos:
+head(dataidx)
+
+```
+
+Los datos ya llegaron 'limpios' desde Python.
+
+
+Aquí podemos ver la distribución de una variable:
+```{r}
+demoTable=table(dataidx$Democracy)
+demoTable
+```
+
+Ahora las frecuencias relativas:
+
+```{r}
+demoTableRel=round(prop.table(demoTable)*100,1)
+demoTableRel
+```
+
+Y aquí el plot que representa esta distribución:
+
+```{r}
+title='Distribución de la Democracia'
+paleta='red'
+barplot(demoTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+```
+
+Los mismo hacemos para ver la Libertad económica en el mundo en una tabla:
+```{r}
+ecoTable=table(dataidx$EconomicFreedom)
+ecoTable
+```
+
+Sus  frecuencias relativas:
+```{r}
+ecoTableRel=round(prop.table(ecoTable)*100,1)
+ecoTableRel
+```
+
+Y aquí el plot:
+```{r}
+title='Distribución de la Libertad Económica'
+paleta='red'
+barplot(ecoTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+```
+
+
+La Libertad general en el mundo en una tabla:
+```{r}
+worldTable=table(dataidx$WorldFreedom)
+worldTable
+```
+
+Ahora las frecuencias relativas:
+```{r}
+worldTableRel=round(prop.table(worldTable)*100,1)
+worldTableRel
+```
+
+
+Y aquí el plot:
+```{r}
+title='Distribución de la Libertad en el Mundo'
+paleta='red'
+barplot(worldTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+
+```
+
+La Libertad de prensa en el mundo en una tabla:
+```{r}
+pressTable=table(dataidx$PressFreedom)
+pressTable
+
+```
+
+Sus frecuencias relativas:
+```{r}
+pressTableRel=round(prop.table(pressTable)*100,1)
+pressTableRel
+```
+
+Y aquí el plot que representa esta distribución:
+```{r}
+title='Distribución de la Libertad de Prensa'
+paleta='red'
+barplot(pressTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+```
+
+
+Podemos mostrar los estadísticos de cada variable:
+
+```{r}
+summary(dataidx[,-1])
+```
+
+
+## Comandos básicos en R para exploración Bivariada:
+
+
+Si asumimos que estamos interesados en el impacto de los otros indices en el GDP, podemos primero ver la relación que tiene esta variable con todas las demás:
+```{r}
+explanans=names(dataidx)[c(3:6)]
+corrDem=cor(x=dataidx[,2],
+            y=dataidx[,explanans],
+            use = "na.or.complete",
+            method = "spearman")
+corrDem
+
+```
+
+Veamos la correlación entre las variables independientes:
+
+```{r}
+corrTable=round(cor(dataidx[explanans],
+               use = "na.or.complete"),2)
+
+# ocultar media matriz
+corrTable[upper.tri(corrTable)]<-""
+as.data.frame(corrTable)
+
+```
+
+
+Finalmente, vemos los modelos propuestos. Primero sin la libertad mundial como independiente:
+```{r}
+LinRegA = lm(gdp ~ ., data = dataidx[,c(2:5)])
+summary(LinRegA)
+
+```
+
+
+Luego con la libertad mundial
+
+```{r}
+LinRegB = lm(gdp ~ ., data = dataidx[,c(2:6)])
+summary(LinRegB)
+```
+
+
+## Otros plots importantes
+
+Podemos pintar un mapa con la información que tenemos. Veamos primero el mapa:
+```{r}
+library(rgdal)
+folder='world_map'
+file='world_map.shp'
+mapaFile=file.path(folder,file)
+mapaMundo = rgdal::readOGR(mapaFile,stringsAsFactors=F) 
+plot(mapaMundo)
+```
+
+Para pintarlo, podemos crear conglomerados. Tenemos para ello que juntar añadir la información de los índices al mapa (no al revés). Veamos cuales son las claves:
+```{r}
+head(mapaMundo@data)
+```
+
+Usamos el campo respectivo para juntar los datos:
+
+```{r}
+# añadiendo información de indices al mapa:
+mapaMundoAll=merge(mapaMundo,
+                   dataidx, 
+                   by.x='NAME', 
+                   by.y='Country',all.x=F)
+```
+
+De ahí hagamos varios pasos:
+
+```{r}
+# nombres de las variables a utilizar
+dimensions=names(dataidx)[c(3:6)]
+```
+
+```{r}
+#creando subconjunto
+dataCluster=mapaMundoAll@data[,c(dimensions)]
+```
+
+
+```{r}
+# indicando que la data numerica es ordinal:
+dataCluster=as.data.frame(lapply(dataCluster,as.ordered))
+```
+
+```{r}
+# llamando librería:
+library(cluster)
+
+# creando matriz de distancias
+dist=daisy(dataCluster,metric = "gower")
+
+# aplicando algoritmo
+pam_fit <- pam(dist, diss = TRUE, k = 3)
+
+# añadiendo los clusters al mapa:
+mapaMundoAll$cluster=pam_fit$clustering
+```
+
+Ya tenemos los clusters, pero hay que recordar que los números asignados no son necesariamente 'reveladores':
+```{r}
+aggregate(IndexofEconomicFreedom~cluster, 
+          data=mapaMundoAll, 
+          FUN=mean,
+          na.rm=T)
+```
+
+Luego, debemos recodificar la columna cluster:
+
+```{r}
+library(car)
+mapaMundoAll$cluster<-recode(mapaMundoAll$cluster,
+                             "2=3;3=2")
+```
+
+
+Con los clusters calculados, podemos pintar el mundo:
+
+```{r}
+# que se pintara:
+varToPlot=mapaMundoAll$cluster
+
+#cuantos colores:
+numberOfColors = length(unique(varToPlot)) 
+
+#qué colores:
+library(RColorBrewer)
+colorForScale='Set2'
+paleta = brewer.pal(numberOfColors, colorForScale)
+
+# a dibujar:
+plot(mapaMundo,col='grey',border=0)
+plot(mapaMundoAll, col = paleta[varToPlot],border=F,add=T)
+legend('left', legend = c("TOP","MEDIUM","LOW"), 
+       fill = paleta,
+       cex = 0.6, 
+       bty = "n",
+       title="Conglomerado")
+```
+
+_____
+
 [Go to section beginning](#beginningc)
 
 
