@@ -78,7 +78,7 @@ DetailStudent
 ```
 
 And destroy it by **NULL**ing it, like this:
-```{r destroyElementList, eval=FALSE}
+```{r destroyElementList, eval=FALSE, echo=TRUE}
 DetailStudent$city=NULL # do you like: DetailStudent[[4]]=NULL
 ```
 
