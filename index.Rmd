@@ -567,264 +567,278 @@ head(data911)
 
 Once you have a data set, you can start working!
 
+This is a data set about different indexes for each country in the world.
 
+```{r, eval=FALSE}
+# linkToData
+link="https://github.com/eScienceWinterSchool/RRStudioSession/raw/master/data/worldidx.RData"
 
-## Comandos básicos en R para exploración Univariada:
+# open data
+load(url(link))
 
-```{r}
-# carga de datos
-link="https://github.com/eScienceWinterSchool/RRStudioSession/raw/master/data/indexes.csv"
-dataidx=read.csv(link, 
-                 stringsAsFactors = T)
-
-# ver primeras filas los datos:
-head(dataidx)
+# see some lines
+head(worldidx)
 
 ```
 
-Los datos ya llegaron 'limpios' desde Python.
+You should see the data types:
 
-
-Aquí podemos ver la distribución de una variable:
-```{r}
-demoTable=table(dataidx$Democracy)
-demoTable
+```{r, eval=FALSE}
+str(worldidx, width = 70,strict.width='cut')
 ```
 
-Ahora las frecuencias relativas:
 
-```{r}
-demoTableRel=round(prop.table(demoTable)*100,1)
-demoTableRel
+We can see the behavior of the _variables_:
+```{r, eval=FALSE}
+summary(worldidx[,-1])
 ```
 
-Y aquí el plot que representa esta distribución:
 
-```{r}
-title='Distribución de la Democracia'
-paleta='red'
-barplot(demoTableRel,main=title,
-        col=paleta,ylim = c(0,100),
-        ylab = "%")
-```
+We can explore a categorical variable by seeing its frequency distribution:
 
-Los mismo hacemos para ver la Libertad económica en el mundo en una tabla:
-```{r}
-ecoTable=table(dataidx$EconomicFreedom)
+```{r, eval=FALSE}
+ecoTable=table(worldidx$EconomicFreedom)
 ecoTable
 ```
 
-Sus  frecuencias relativas:
-```{r}
+This is the relative values:
+
+```{r, eval=FALSE}
 ecoTableRel=round(prop.table(ecoTable)*100,1)
 ecoTableRel
 ```
 
-Y aquí el plot:
-```{r}
-title='Distribución de la Libertad Económica'
-paleta='red'
-barplot(ecoTableRel,main=title,
-        col=paleta,ylim = c(0,100),
-        ylab = "%")
+If we are to plot using _ggplot_, we should turn the table into a data frame:
+
+```{r, eval=FALSE}
+plotTable=as.data.frame(ecoTableRel)
+names(plotTable)=c("IndexValue", "Percent") # give new names
+plotTable
+```
+
+Call the library:
+
+```{r, eval=FALSE}
+library(ggplot2)
 ```
 
 
-La Libertad general en el mundo en una tabla:
-```{r}
-worldTable=table(dataidx$WorldFreedom)
-worldTable
+Make the base plot:
+```{r, eval=FALSE}
+base=ggplot(data = plotTable,
+            aes(x = IndexValue,
+                y = Percent))
+plot1= base + geom_bar(stat = "identity")
+
+plot1
 ```
 
-Ahora las frecuencias relativas:
-```{r}
-worldTableRel=round(prop.table(worldTable)*100,1)
-worldTableRel
+You can the  add more elements:
+
+```{r, eval=FALSE}
+# title
+plot2 = plot1 + labs(title="Economy")
+plot2
 ```
 
-
-Y aquí el plot:
-```{r}
-title='Distribución de la Libertad en el Mundo'
-paleta='red'
-barplot(worldTableRel,main=title,
-        col=paleta,ylim = c(0,100),
-        ylab = "%")
-
+```{r, eval=FALSE}
+# less ink
+plot3 = plot2 + theme_classic() 
+plot3
 ```
 
-La Libertad de prensa en el mundo en una tabla:
-```{r}
-pressTable=table(dataidx$PressFreedom)
-pressTable
-
+```{r, eval=FALSE}
+# change default title position
+plot3 + theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
-Sus frecuencias relativas:
-```{r}
-pressTableRel=round(prop.table(pressTable)*100,1)
-pressTableRel
-```
+The numeric variable _gdp_ can also be plotted, but since it is a numeric variable, we should use different plots:
 
-Y aquí el plot que representa esta distribución:
-```{r}
-title='Distribución de la Libertad de Prensa'
-paleta='red'
-barplot(pressTableRel,main=title,
-        col=paleta,ylim = c(0,100),
-        ylab = "%")
-```
+```{r, eval=FALSE}
+# numeric variable do not need frequency table:
 
+base=ggplot(data = worldidx,
+            aes(x = gdp))
+plot1= base + geom_histogram()
 
-Podemos mostrar los estadísticos de cada variable:
+plot2= plot1 + labs(title="GDP") + theme_classic() 
 
-```{r}
-summary(dataidx[,-1])
+plot2 + theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 
-## Comandos básicos en R para exploración Bivariada:
+A boxplot can also be a good choice:
+
+```{r, eval=FALSE}
+base=ggplot(data = worldidx,
+            aes(y=gdp))
+plot1= base + geom_boxplot() + labs(title="GDP") + theme_classic() 
+
+plot2 = plot1 + theme(plot.title = element_text(hjust = 0.5)) 
+
+plot2
+```
+
+Better x-axis:
+
+```{r, eval=FALSE}
+plot3 = plot2 + scale_x_continuous(labels = NULL,breaks = 0 ) 
+
+plot3
+```
 
 
-Si asumimos que estamos interesados en el impacto de los otros indices en el GDP, podemos primero ver la relación que tiene esta variable con todas las demás:
-```{r}
-explanans=names(dataidx)[c(3:6)]
-corrDem=cor(x=dataidx[,2],
-            y=dataidx[,explanans],
+Avoid scientific notation:
+
+```{r, eval=FALSE}
+plot3 + scale_y_continuous(labels = scales::number_format(big.mark = ""))
+```
+
+
+We can also explore bivariate relationships related to a explanatory model. Let's explore the possible effect on these indexes on the gdp.
+
+```{r, eval=FALSE}
+corrDem=cor(x=worldidx[,c(3:6)],
+            y=worldidx[,2],
             use = "na.or.complete",
             method = "spearman")
 corrDem
 
 ```
 
-Veamos la correlación entre las variables independientes:
+And among the indexes:
 
-```{r}
-corrTable=round(cor(dataidx[explanans],
+```{r, eval=FALSE}
+corrTable=round(cor(worldidx[,c(3:6)],
                use = "na.or.complete"),2)
 
-# ocultar media matriz
+# hide redundancy
 corrTable[upper.tri(corrTable)]<-""
 as.data.frame(corrTable)
 
 ```
 
 
-Finalmente, vemos los modelos propuestos. Primero sin la libertad mundial como independiente:
-```{r}
-LinRegA = lm(gdp ~ ., data = dataidx[,c(2:5)])
-summary(LinRegA)
+We could explore the indexes by reducing their dimensionality. We will use a map for this case.
 
-```
-
-
-Luego con la libertad mundial
-
-```{r}
-LinRegB = lm(gdp ~ ., data = dataidx[,c(2:6)])
-summary(LinRegB)
-```
-
-
-## Otros plots importantes
-
-Podemos pintar un mapa con la información que tenemos. Veamos primero el mapa:
-```{r}
+```{r, eval=FALSE}
 library(rgdal)
 folder='world_map'
 file='world_map.shp'
-mapaFile=file.path(folder,file)
-mapaMundo = rgdal::readOGR(mapaFile,stringsAsFactors=F) 
-plot(mapaMundo)
+mapFile=file.path(folder,file)
+mapWorld = rgdal::readOGR(mapFile,stringsAsFactors=F) 
 ```
 
-Para pintarlo, podemos crear conglomerados. Tenemos para ello que juntar añadir la información de los índices al mapa (no al revés). Veamos cuales son las claves:
-```{r}
-head(mapaMundo@data)
+Do we have the map:
+
+```{r, eval=FALSE}
+plot(mapWorld)
 ```
 
-Usamos el campo respectivo para juntar los datos:
+The plan is to color the countries according to a group, which will result from clustering. 
 
-```{r}
-# añadiendo información de indices al mapa:
-mapaMundoAll=merge(mapaMundo,
-                   dataidx, 
-                   by.x='NAME', 
-                   by.y='Country',all.x=F)
+```{r, eval=FALSE}
+# see data in map
+head(mapWorld@data)
 ```
 
-De ahí hagamos varios pasos:
+Let's add our data to the map data:
 
-```{r}
-# nombres de las variables a utilizar
-dimensions=names(dataidx)[c(3:6)]
+```{r, eval=FALSE}
+mapWorldAll=merge(mapWorld, #map first
+                   worldidx, 
+                   by.x='NAME', # common column
+                   by.y='Country', # common column
+                   all.x=F) # reduced map.
 ```
 
-```{r}
-#creando subconjunto
-dataCluster=mapaMundoAll@data[,c(dimensions)]
+Now, let's compute the clusters:
+
+```{r, eval=FALSE}
+# data for clustering
+dataCluster=mapWorldAll@data[,c(7:10)]
 ```
 
 
-```{r}
-# indicando que la data numerica es ordinal:
+```{r, eval=FALSE}
+# setting the data as ordinal
 dataCluster=as.data.frame(lapply(dataCluster,as.ordered))
 ```
 
-```{r}
-# llamando librería:
-library(cluster)
+```{r, eval=FALSE}
+# calling library
 
-# creando matriz de distancias
+library(cluster)
+set.seed(123)
+
+# computing distance matrix for ordinals
 dist=daisy(dataCluster,metric = "gower")
 
-# aplicando algoritmo
-pam_fit <- pam(dist, diss = TRUE, k = 3)
+# computing clusters
+result <- kmeans(dataCluster, centers = 3)
 
-# añadiendo los clusters al mapa:
-mapaMundoAll$cluster=pam_fit$clustering
+# adding the cluster
+mapWorldAll$cluster=result$cluster
 ```
 
-Ya tenemos los clusters, pero hay que recordar que los números asignados no son necesariamente 'reveladores':
-```{r}
+Let's check the values:
+
+```{r, eval=FALSE}
 aggregate(IndexofEconomicFreedom~cluster, 
-          data=mapaMundoAll, 
-          FUN=mean,
+          data=mapWorldAll, 
+          FUN=median,
           na.rm=T)
 ```
 
-Luego, debemos recodificar la columna cluster:
+If needed:
 
-```{r}
-library(car)
-mapaMundoAll$cluster<-recode(mapaMundoAll$cluster,
-                             "2=3;3=2")
+```{r, eval=FALSE}
+#library(car)
+#mapWorldAll$cluster<-recode(mapWorldAll$cluster,
+#                             "3=1;2=3;1=2")
 ```
 
 
-Con los clusters calculados, podemos pintar el mundo:
+Now paint the world:
 
-```{r}
-# que se pintara:
-varToPlot=mapaMundoAll$cluster
+```{r, eval=FALSE}
+# what:
+varToPlot=mapWorldAll$cluster
 
-#cuantos colores:
-numberOfColors = length(unique(varToPlot)) 
+#which colors:
+palette = c('green','orange','red')
 
-#qué colores:
-library(RColorBrewer)
-colorForScale='Set2'
-paleta = brewer.pal(numberOfColors, colorForScale)
+# plotting:
 
-# a dibujar:
-plot(mapaMundo,col='grey',border=0)
-plot(mapaMundoAll, col = paleta[varToPlot],border=F,add=T)
+## base layer
+plot(mapWorld,col='grey',border=0) 
+
+## top layer
+plot(mapWorldAll, col = palette[varToPlot],border=F,add=T)
+
+
 legend('left', legend = c("TOP","MEDIUM","LOW"), 
-       fill = paleta,
+       fill = palette,
        cex = 0.6, 
        bty = "n",
-       title="Conglomerado")
+       title="Clusters")
 ```
+
+
+Finally, we could compute the hipotesized regression:
+
+```{r, eval=FALSE}
+LinReg = lm(gdp ~ ., data = worldidx[,c(2:6)])
+summary(LinReg)
+```
+
+```{r, results='asis', eval=FALSE}
+library(xtable)
+library(knitr)
+kable(xtable(summary(LinReg)),type='html')
+```
+
+
 
 _____
 

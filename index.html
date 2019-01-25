@@ -448,6 +448,157 @@ library(jsonlite)
 endPoint=&quot;https://data.seattle.gov/resource/ttdd-vwfw.json&quot; 
 data911 = fromJSON(endPoint)
 head(data911)</code></pre>
+<p>Once you have a data set, you can start working!</p>
+<p>This is a data set about different indexes for each country in the world.</p>
+<pre class="r"><code># linkToData
+link=&quot;https://github.com/eScienceWinterSchool/RRStudioSession/raw/master/data/worldidx.RData&quot;
+
+# open data
+load(url(link))
+
+# see some lines
+head(worldidx)</code></pre>
+<p>You should see the data types:</p>
+<pre class="r"><code>str(worldidx, width = 70,strict.width='cut')</code></pre>
+<p>We can see the behavior of the <em>variables</em>:</p>
+<pre class="r"><code>summary(worldidx[,-1])</code></pre>
+<p>We can explore a categorical variable by seeing its frequency distribution:</p>
+<pre class="r"><code>ecoTable=table(worldidx$EconomicFreedom)
+ecoTable</code></pre>
+<p>This is the relative values:</p>
+<pre class="r"><code>ecoTableRel=round(prop.table(ecoTable)*100,1)
+ecoTableRel</code></pre>
+<p>If we are to plot using <em>ggplot</em>, we should turn the table into a data frame:</p>
+<pre class="r"><code>plotTable=as.data.frame(ecoTableRel)
+names(plotTable)=c(&quot;IndexValue&quot;, &quot;Percent&quot;) # give new names
+plotTable</code></pre>
+<p>Call the library:</p>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<p>Make the base plot:</p>
+<pre class="r"><code>base=ggplot(data = plotTable,
+            aes(x = IndexValue,
+                y = Percent))
+plot1= base + geom_bar(stat = &quot;identity&quot;)
+
+plot1</code></pre>
+<p>You can the add more elements:</p>
+<pre class="r"><code># title
+plot2 = plot1 + labs(title=&quot;Economy&quot;)
+plot2</code></pre>
+<pre class="r"><code># less ink
+plot3 = plot2 + theme_classic() 
+plot3</code></pre>
+<pre class="r"><code># change default title position
+plot3 + theme(plot.title = element_text(hjust = 0.5)) </code></pre>
+<p>The numeric variable <em>gdp</em> can also be plotted, but since it is a numeric variable, we should use different plots:</p>
+<pre class="r"><code># numeric variable do not need frequency table:
+
+base=ggplot(data = worldidx,
+            aes(x = gdp))
+plot1= base + geom_histogram()
+
+plot2= plot1 + labs(title=&quot;GDP&quot;) + theme_classic() 
+
+plot2 + theme(plot.title = element_text(hjust = 0.5)) </code></pre>
+<p>A boxplot can also be a good choice:</p>
+<pre class="r"><code>base=ggplot(data = worldidx,
+            aes(y=gdp))
+plot1= base + geom_boxplot() + labs(title=&quot;GDP&quot;) + theme_classic() 
+
+plot2 = plot1 + theme(plot.title = element_text(hjust = 0.5)) 
+
+plot2</code></pre>
+<p>Better x-axis:</p>
+<pre class="r"><code>plot3 = plot2 + scale_x_continuous(labels = NULL,breaks = 0 ) 
+
+plot3</code></pre>
+<p>Avoid scientific notation:</p>
+<pre class="r"><code>plot3 + scale_y_continuous(labels = scales::number_format(big.mark = &quot;&quot;))</code></pre>
+<p>We can also explore bivariate relationships related to a explanatory model. Let’s explore the possible effect on these indexes on the gdp.</p>
+<pre class="r"><code>corrDem=cor(x=worldidx[,c(3:6)],
+            y=worldidx[,2],
+            use = &quot;na.or.complete&quot;,
+            method = &quot;spearman&quot;)
+corrDem</code></pre>
+<p>And among the indexes:</p>
+<pre class="r"><code>corrTable=round(cor(worldidx[,c(3:6)],
+               use = &quot;na.or.complete&quot;),2)
+
+# hide redundancy
+corrTable[upper.tri(corrTable)]&lt;-&quot;&quot;
+as.data.frame(corrTable)</code></pre>
+<p>We could explore the indexes by reducing their dimensionality. We will use a map for this case.</p>
+<pre class="r"><code>library(rgdal)
+folder='world_map'
+file='world_map.shp'
+mapFile=file.path(folder,file)
+mapWorld = rgdal::readOGR(mapFile,stringsAsFactors=F) </code></pre>
+<p>Do we have the map:</p>
+<pre class="r"><code>plot(mapWorld)</code></pre>
+<p>The plan is to color the countries according to a group, which will result from clustering.</p>
+<pre class="r"><code># see data in map
+head(mapWorld@data)</code></pre>
+<p>Let’s add our data to the map data:</p>
+<pre class="r"><code>mapWorldAll=merge(mapWorld, #map first
+                   worldidx, 
+                   by.x='NAME', # common column
+                   by.y='Country', # common column
+                   all.x=F) # reduced map.</code></pre>
+<p>Now, let’s compute the clusters:</p>
+<pre class="r"><code># data for clustering
+dataCluster=mapWorldAll@data[,c(7:10)]</code></pre>
+<pre class="r"><code># setting the data as ordinal
+dataCluster=as.data.frame(lapply(dataCluster,as.ordered))</code></pre>
+<pre class="r"><code># calling library
+
+library(cluster)
+set.seed(123)
+
+# computing distance matrix for ordinals
+dist=daisy(dataCluster,metric = &quot;gower&quot;)
+
+# computing clusters
+result &lt;- kmeans(dataCluster, centers = 3)
+
+# adding the cluster
+mapWorldAll$cluster=result$cluster</code></pre>
+<p>Let’s check the values:</p>
+<pre class="r"><code>aggregate(IndexofEconomicFreedom~cluster, 
+          data=mapWorldAll, 
+          FUN=median,
+          na.rm=T)</code></pre>
+<p>If needed:</p>
+<pre class="r"><code>#library(car)
+#mapWorldAll$cluster&lt;-recode(mapWorldAll$cluster,
+#                             &quot;3=1;2=3;1=2&quot;)</code></pre>
+<p>Now paint the world:</p>
+<pre class="r"><code># what:
+varToPlot=mapWorldAll$cluster
+
+#which colors:
+palette = c('green','orange','red')
+
+# plotting:
+
+## base layer
+plot(mapWorld,col='grey',border=0) 
+
+## top layer
+plot(mapWorldAll, col = palette[varToPlot],border=F,add=T)
+
+
+legend('left', legend = c(&quot;TOP&quot;,&quot;MEDIUM&quot;,&quot;LOW&quot;), 
+       fill = palette,
+       cex = 0.6, 
+       bty = &quot;n&quot;,
+       title=&quot;Clusters&quot;)</code></pre>
+<p>Finally, we could compute the hipotesized regression:</p>
+<pre class="r"><code>LinReg = lm(gdp ~ ., data = worldidx[,c(2:6)])
+summary(LinReg)</code></pre>
+<pre class="r"><code>library(xtable)
+library(knitr)
+kable(xtable(summary(LinReg)),type='html')</code></pre>
+<hr />
 <p><a href="#beginningc">Go to section beginning</a></p>
 </div>
 </div>
