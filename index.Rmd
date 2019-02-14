@@ -3,7 +3,11 @@
 
 # [Session 1: Introduction to R](https://github.com/eScienceWinterSchool/RRStudioSession)
 
-### Prof. José Manuel Magallanes, PhD 
+### Prof. José Manuel Magallanes, PhD
+
+* Associate Professor, Departamento de Ciencias Sociales, Pontificia Universidad Católica del Perú, [jmagallanes@pucp.edu.pe](mailto:jmagallanes@pucp.edu.pe)
+
+* Visiting Associate Professor, Evans School of Public Policy and Governance / Senior Data Science Fellow, eScience Institute, University of Washington, [magajm@uw.edu](mailto:magajm@uw.edu)
 
 _____
 
@@ -30,14 +34,14 @@ We are going to talk about 3 data structures in R:
 
 Lists are containers of values. The values can be of any kind (numbers or non-numbers), and even other containers (simple or complex). If we have an spreadsheet as a reference, a row is a 'natural' list.
 
-```{r CreatingList, eval=FALSE}
+```{r CreatingList, eval=TRUE}
 DetailStudent=list(fullName="Fred Meyers",
                    age=40,
                    female=FALSE)
 ```
 
 The *object* 'DetailStudent' serves to store _temporarily_ the list in the computer. To name a list, use combinations of letters and numbers (never start with a number) in a meaningful way. Typing the name of the object 'DetailStudent', now a list, will give you all the contents you saved in there:
-```{r ShowingList, eval=FALSE}
+```{r ShowingList, eval=TRUE}
 DetailStudent
 ```
 Each of the elements in the list, in this case, holds a different type:
@@ -48,29 +52,29 @@ Each of the elements in the list, in this case, holds a different type:
 
 You can access individual elements like this:
 
-```{r AccessingList, eval=FALSE}
+```{r AccessingList, eval=TRUE}
 DetailStudent[[1]]
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # or
 DetailStudent[['fullName']]
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # or
 DetailStudent$fullName
 ```
 
 You can alter the list using:
-```{r AlteringLists, eval=FALSE}
+```{r AlteringLists, eval=TRUE}
 DetailStudent$fullName='Alfred Mayer'
 # Then:
 DetailStudent
 ```
 
 You can add an element like this:
-```{r addElemList, eval=FALSE}
+```{r addElemList, eval=TRUE}
 DetailStudent$city='Seattle'
 
 # show:
@@ -78,7 +82,7 @@ DetailStudent
 ```
 
 And destroy it by **NULL**ing it, like this:
-```{r destroyElementList, eval=FALSE, echo=TRUE}
+```{r destroyElementList, eval=TRUE, echo=TRUE}
 DetailStudent$city=NULL # do you like: DetailStudent[[4]]=NULL
 ```
 
@@ -92,14 +96,14 @@ DetailStudent$city=NULL # do you like: DetailStudent[[4]]=NULL
 ## Vectors
 Vectors are also containers of values. The values should be of __only one type__ (**R** may alter it silently, otherwise). If we have an spreadsheet as a reference, a column can be a natural vector.
 
-```{r CreatingVectors, eval=FALSE}
+```{r CreatingVectors, eval=TRUE}
 names=c("Fred Meyers","Sarah Jones", "Lou Ferrigno","Sky Turner")
 ages=c(40,35, 60,77)
 female=c(F,T,T,T)
 ```
 
 Each *object* is holding temporarily a vector. Use combinations of letters and numbers (never start with a number) in a meaningful way to name a vector. When typing the name of the object you will get all the contents:
-```{r ShowingVector, eval=FALSE}
+```{r ShowingVector, eval=TRUE}
 names
 ages
 female
@@ -107,7 +111,7 @@ female
 
 Each vector is composed of elements with the same type. If you want to access individual elements, you can write:
 
-```{r AccessingVector, eval=FALSE}
+```{r AccessingVector, eval=TRUE}
 names[1]
 # or
 ages[1]
@@ -116,50 +120,51 @@ female[1]
 ```
 
 You can alter the list using:
-```{r AlteringVector, eval=FALSE}
+```{r AlteringVector, eval=TRUE}
 names[1]='Alfred Mayer'
 # Then:
 names[1]
 ```
 
 You can add an element to a vector like this:
-```{r addElemVec, eval=FALSE}
+```{r addElemVec, eval=TRUE}
 elements=c(1,2,3)
 elements=c(elements,40) 
 elements
 ```
 
 You can NOT delete it with NULL:
-```{r delElemVec, results='asis', echo=TRUE, eval=FALSE}
-elements[4]=NULL
+```{r delElemVec, results='asis', echo=TRUE, eval=TRUE}
+#elements[4]=NULL
 ```
 
 Just do this:
-```{r delElemVecOK, eval=FALSE}
+```{r delElemVecOK, eval=TRUE}
 elements=elements[-4] # vector shrinks
+elements
 ```
 
 Another important operation is to get rid of repeated values:
-```{r uniqueVals, eval=FALSE}
+```{r uniqueVals, eval=TRUE}
 weekdays=c('M','T','W','Th','S','Su','Su')
 weekdays
 ```
 
 Then, use the function _unique_:
-```{r uniqueValsOK, eval=FALSE}
+```{r uniqueValsOK, eval=TRUE}
 unique(weekdays)
 ```
 
 
 Vector elements can have 'names', but their contents still need to be homogeneous:
-```{r TroublesomeVector, eval=FALSE}
+```{r TroublesomeVector, eval=TRUE}
 newAges=c("Sam"=50, "Paul"=30, "Name"="Jim")
 newAges
 ```
 
 As you saw above, the presence of "Jim" as an element, *coerced* the other values to *characters* (the _numbers_ are now _text_, the symbol **''** is used to show that). Eliminating that value will give an appropriate vector:
 
-```{r CorrectingVector, eval=FALSE}
+```{r CorrectingVector, eval=TRUE}
 newAgesGood=c("Sam"=50, "Paul"=30)
 newAgesGood
 ```
@@ -176,7 +181,7 @@ newAgesGood
 
 Data frames are more complex containers of values. The most common analogy is a data table like  the ones in a __spreadsheet__: 
 
-```{r CreatingDF, eval=FALSE}
+```{r CreatingDF, eval=TRUE}
 # VECTORS
 names=c("Qing", "Françoise", "Raúl", "Bjork")
 ages=c(32,33,28,30)
@@ -187,39 +192,38 @@ education=c("Bach", "Bach", "Master", "PhD")
 
 Then, we can create a data frame:
 
-```{r reCreateDFStrings, eval=FALSE}
+```{r reCreateDFStrings, eval=TRUE}
 #DF as a "List" of vectors:
-students=list('names'=names,'ages'=ages,'country'=country,'education'=education,
-                    stringsAsFactors=F)
+students=list('names'=names,'ages'=ages,'country'=country,'education'=education)
 students
 ```
 
 Then,
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 students=data.frame(students,stringsAsFactors = F)
 students
 ```
 
 Take a look at structure:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 str(students)
 ```
 
 
 The function _str_ showed you the dimensions of the structure (number of rows and columns); R has alternative ways to get the dimensions:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # rows and columns
 dim(students)
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 #also
 nrow(students)  # we have ncol() too!
 
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 
 # and very important:
 length(students)
@@ -229,70 +233,70 @@ length(students)
 
 The function _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 head(students) 
 ```
 
 Of course, we have __tail__:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 tail(students) 
 ```
 
 
 
 You can access data frames elements in an easy way:
-```{r accessDF, eval=FALSE}
+```{r accessDF, eval=TRUE}
 # one particular column
 students$names
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # two columns using positions
 students[,c(1,4)]
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ## two columns using names of columns
 students[,c('names','education')]
 ```
 
 
 Using positions is the best way to get several columns:
-```{r getColsDF, eval=FALSE}
+```{r getColsDF, eval=TRUE}
 students[,c(1:3)] # ':' is used to facilitate 'from-to' sequence
 ```
 
 Of course, you can create **subsets**:
-```{r subsetDF, eval=FALSE}
+```{r subsetDF, eval=TRUE}
 studentsNoEd=students[,c(1:3)]
 studentsNoEd
 ```
 
 You can modify any values in a data frame. Let me create a copy of this data frame to play with:
-```{r copyDF, eval=FALSE}
+```{r copyDF, eval=TRUE}
 studentsCopy=students # I make a copy to avoid altering my original dataframe
 ```
 
 Now, I can change the age of Qing to 23 replacing 32:
-```{r modifyDF, eval=FALSE}
+```{r modifyDF, eval=TRUE}
 studentsCopy[1,2]=23
 # change is immediate! (you will not get any warning)
 studentsCopy[1,]
 ```
 
 We can reset a column as **missing**:
-```{r missingColDF, eval=FALSE}
+```{r missingColDF, eval=TRUE}
 studentsCopy$country=NA
 ```
 
 And, delete a column by **null**ing it:
-```{r deleteColDF, eval=FALSE}
+```{r deleteColDF, eval=TRUE}
 studentsCopy$ages=NULL
 ```
 
 Then, our copy looks like this:
-```{r copyDfShow, eval=FALSE}
+```{r copyDfShow, eval=TRUE}
 studentsCopy
 ```
 
@@ -302,47 +306,47 @@ studentsCopy
 Once you have a data frame you can start writing interesting queries (notice the use of _commas_):
 
 **Who is the oldest in the group?**
-```{r query1, eval=FALSE}
+```{r query1, eval=TRUE}
 students[which.max(students$ages),] 
 ```
 
 **Who is the youngest in the group?**
-```{r query2, eval=FALSE}
+```{r query2, eval=TRUE}
 students[which.min(students$ages),] 
 ```
 
 **Who is above 30 and from China?**
-```{r query3, eval=FALSE}
+```{r query3, eval=TRUE}
 students[students$ages>30 & students$country=='China',] 
 ```
 
 
 **Who is not from Norway?**
-```{r query4, eval=FALSE}
+```{r query4, eval=TRUE}
 students[students$country!="Norway",] 
 ```
 
 **Who is from one of these?**
-```{r query5, eval=FALSE}
+```{r query5, eval=TRUE}
 DangeourousPlaces=c("Peru", "USA", "Spain")
 students[students$country %in% DangeourousPlaces,] 
 ```
 
 check:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 students[!students$country %in% DangeourousPlaces,] # the opposite
 ```
 
 
 **The education level of the one above 30 and from China?**
-```{r query6, eval=FALSE}
+```{r query6, eval=TRUE}
 students[students$ages>30 & students$country=='China',]$education 
 ```
 
 **Show me the data ordered by age (decreasing)?**
-```{r query7, eval=FALSE}
-students[order(-students$ages),]
+```{r query7, eval=TRUE}
+students[order(students$ages),]
 ```
 
 
@@ -365,7 +369,7 @@ The concept of control of execution is a key component when writing code. For th
 ## Conditional Execution
 
 This is how you tell the computer what part of a code to execute, depending if an event is true or false.
-```{r conditionalExec, eval=FALSE}
+```{r conditionalExec, eval=TRUE}
 value=-100
 
 #condition
@@ -387,7 +391,7 @@ Notice the use of **parenthesis** in the condition. Also, the use of **{}**  to 
 
 ## Loops
 This is how you tell the computer to do something many times (and stop when it has to):
-```{r loopPrint, eval=FALSE}
+```{r loopPrint, eval=TRUE}
 values=c(9,25,100)
 for (value in values){ # do this for each value in values
   print(sqrt(value))
@@ -395,7 +399,7 @@ for (value in values){ # do this for each value in values
 ```
 
 You do not need to show each result, you could save the results.
-```{r loopSave, eval=FALSE}
+```{r loopSave, eval=TRUE}
 values=c(9,25,100)
 rootValues=c() # empty vector
 for (value in values){
@@ -407,7 +411,7 @@ rootValues
 
 It is evident that, combining *loops* and *control of execution*, we can make better programs. For example, this code is not controlling well the process:
 
-```{r loopSave2, eval=FALSE}
+```{r loopSave2, eval=TRUE}
 values=c(9,25,-100)
 rootValues=c()
 for (value in values){
@@ -419,7 +423,7 @@ rootValues
 
 In the last result, R decided what to do when a negative value was input (it also sent a warning). This one does a better job:
 
-```{r loopSave3, eval=FALSE}
+```{r loopSave3, eval=TRUE}
 values=c(9,25,-100,144,-72)
 rootValues=c()
 for (value in values){
@@ -438,7 +442,7 @@ We are producing an ouput with the same size as input. If we omit the **else** s
 
 You can also use **break** when you consider the execution should stop:
 
-```{r break, eval=FALSE}
+```{r break, eval=TRUE}
 values=c(9,25,-100,144,-72)
 rootValues=c()
 for (value in values){
@@ -455,7 +459,7 @@ The code above halted the program.
 
 You can use **next** when you consider the execution should continue:
 
-```{r NEXT, eval=FALSE}
+```{r NEXT, eval=TRUE}
 values=list(9,NA,'1000',-100,144,-72)
 for (value in values){
   if (is.na(value)){
@@ -496,30 +500,33 @@ ____
 ### Collecting data from proprietary software
 
 Let's start with data from SPSS and STATA, very common in public policy schools. To work with these kind of files, we will use the package **haven**:
-```{r, eval=FALSE}
+```{r installation, eval=TRUE}
 #install.packages("haven")
 library(haven)
 ```
 
 Let me open the SPSS file first, these data come from the American National Election Studies survey (ANES):
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 folder="data"
 fileName="anes_timeseries_2012.sav"
 fileToRead=file.path(folder,fileName)
 dataSpss=read_sav(fileToRead)
 ```
+```{r}
+head(dataSpss)
+```
 
 So far, we have the data but it is not a data frame, but a tibble, a similar structure created by *haven*. This is a rather big file, so let me select some variables ("libcpre_self","libcpo_self"), a couple of questions pre and post elections asking respondents to place themselves on a seven point scale ranging from ‘extremely liberal’ to ‘extremely conservative’) and create a data frame with them: 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 varsOfInterest=c("libcpre_self","libcpo_self")
 dataSpssSub=as.data.frame(dataSpss)[varsOfInterest]
 head(dataSpssSub)
 ```
 
 A similar process is followed to get a STATA file:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 fileName="anes_timeseries_2012.dta"
 fileToRead=file.path(folder,fileName)
 dataStata=read_dta(fileToRead)
@@ -533,11 +540,11 @@ head(dataStataSub)
 Let's collect some data using [Google Forms](https://goo.gl/forms/SLnJY1noQSvZGbAv1). 
 
 The answers to your form are saved in an spreadsheet, which you should publish as a CSV file. Then, I can read it like this:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 
 require(RCurl)
 # obtained from google docs:
-link='link'
+link='https://docs.google.com/spreadsheets/d/e/2PACX-1vSalZScSayJZksB0lRCth3EgFEZxTj1ospdC9NWj5OL9OIkSyyEgIHV2pE-3qS_YLHZ1972z_DSOLv9/pub?gid=122814565&single=true&output=csv'
 
 # getting info
 myCsv <- getURL(link)
@@ -556,7 +563,7 @@ head(myData)
 
 There are organizations, public and private, that have an open data policy that allows people to access their repositories dynamically. You can get that data in CSV format if available, but the data is always in  XML or JSON format, which are data containers that store data in an *associative array* structure. R could open that data using lists, but we will transform it into a data frame. Let me get the data about 9-1-1 Police reponses from [Seattle](https://dev.socrata.com/foundry/data.seattle.gov/ttdd-vwfw):
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 #install.packages("jsonlite")
 library(jsonlite) 
 endPoint="https://data.seattle.gov/resource/ttdd-vwfw.json" 
@@ -569,7 +576,7 @@ Once you have a data set, you can start working!
 
 This is a data set about different indexes for each country in the world.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # linkToData
 link="https://github.com/eScienceWinterSchool/RRStudioSession/raw/master/data/worldidx.RData"
 
@@ -583,34 +590,42 @@ head(worldidx)
 
 You should see the data types:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 str(worldidx, width = 70,strict.width='cut')
 ```
 
 
 We can see the behavior of the _variables_:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 summary(worldidx[,-1])
 ```
 
 
 We can explore a categorical variable by seeing its frequency distribution:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ecoTable=table(worldidx$EconomicFreedom)
 ecoTable
 ```
 
 This is the relative values:
 
-```{r, eval=FALSE}
+```{r}
+res1=prop.table(ecoTable)
+res2=res1*100
+res3=round(res2,1)
+res3
+```
+
+
+```{r, eval=TRUE}
 ecoTableRel=round(prop.table(ecoTable)*100,1)
 ecoTableRel
 ```
 
 If we are to plot using _ggplot_, we should turn the table into a data frame:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 plotTable=as.data.frame(ecoTableRel)
 names(plotTable)=c("IndexValue", "Percent") # give new names
 plotTable
@@ -618,16 +633,17 @@ plotTable
 
 Call the library:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 library(ggplot2)
 ```
 
 
 Make the base plot:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 base=ggplot(data = plotTable,
             aes(x = IndexValue,
                 y = Percent))
+
 plot1= base + geom_bar(stat = "identity")
 
 plot1
@@ -635,26 +651,26 @@ plot1
 
 You can the  add more elements:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # title
 plot2 = plot1 + labs(title="Economy")
 plot2
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # less ink
 plot3 = plot2 + theme_classic() 
 plot3
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # change default title position
 plot3 + theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 The numeric variable _gdp_ can also be plotted, but since it is a numeric variable, we should use different plots:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # numeric variable do not need frequency table:
 
 base=ggplot(data = worldidx,
@@ -669,7 +685,7 @@ plot2 + theme(plot.title = element_text(hjust = 0.5))
 
 A boxplot can also be a good choice:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 base=ggplot(data = worldidx,
             aes(y=gdp))
 plot1= base + geom_boxplot() + labs(title="GDP") + theme_classic() 
@@ -681,7 +697,7 @@ plot2
 
 Better x-axis:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 plot3 = plot2 + scale_x_continuous(labels = NULL,breaks = 0 ) 
 
 plot3
@@ -690,14 +706,15 @@ plot3
 
 Avoid scientific notation:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
+library(scales)
 plot3 + scale_y_continuous(labels = scales::number_format(big.mark = ""))
 ```
 
 
 We can also explore bivariate relationships related to a explanatory model. Let's explore the possible effect on these indexes on the gdp.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 corrDem=cor(x=worldidx[,c(3:6)],
             y=worldidx[,2],
             use = "na.or.complete",
@@ -705,10 +722,13 @@ corrDem=cor(x=worldidx[,c(3:6)],
 corrDem
 
 ```
+```{r}
+c(1,3:6, 10, 20:25,31)
+```
 
 And among the indexes:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 corrTable=round(cor(worldidx[,c(3:6)],
                use = "na.or.complete"),2)
 
@@ -721,7 +741,7 @@ as.data.frame(corrTable)
 
 We could explore the indexes by reducing their dimensionality. We will use a map for this case.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 library(rgdal)
 folder='world_map'
 file='world_map.shp'
@@ -731,20 +751,20 @@ mapWorld = rgdal::readOGR(mapFile,stringsAsFactors=F)
 
 Do we have the map:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 plot(mapWorld)
 ```
 
 The plan is to color the countries according to a group, which will result from clustering. 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # see data in map
 head(mapWorld@data)
 ```
 
 Let's add our data to the map data:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 mapWorldAll=merge(mapWorld, #map first
                    worldidx, 
                    by.x='NAME', # common column
@@ -754,25 +774,30 @@ mapWorldAll=merge(mapWorld, #map first
 
 Now, let's compute the clusters:
 
-```{r, eval=FALSE}
+
+```{r}
+head(mapWorldAll@data[,c(13:16)])
+```
+
+```{r, eval=TRUE}
 # data for clustering
-dataCluster=mapWorldAll@data[,c(7:10)]
+dataCluster=mapWorldAll@data[,c(13:16)]
 ```
 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # setting the data as ordinal
 dataCluster=as.data.frame(lapply(dataCluster,as.ordered))
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # calling library
 
 library(cluster)
 set.seed(123)
 
 # computing distance matrix for ordinals
-dist=daisy(dataCluster,metric = "gower")
+#dist=daisy(dataCluster,metric = "gower")
 
 # computing clusters
 result <- kmeans(dataCluster, centers = 3)
@@ -783,7 +808,7 @@ mapWorldAll$cluster=result$cluster
 
 Let's check the values:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 aggregate(IndexofEconomicFreedom~cluster, 
           data=mapWorldAll, 
           FUN=median,
@@ -792,7 +817,7 @@ aggregate(IndexofEconomicFreedom~cluster,
 
 If needed:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 #library(car)
 #mapWorldAll$cluster<-recode(mapWorldAll$cluster,
 #                             "3=1;2=3;1=2")
@@ -801,7 +826,7 @@ If needed:
 
 Now paint the world:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # what:
 varToPlot=mapWorldAll$cluster
 
@@ -827,12 +852,12 @@ legend('left', legend = c("TOP","MEDIUM","LOW"),
 
 Finally, we could compute the hipotesized regression:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 LinReg = lm(gdp ~ ., data = worldidx[,c(2:6)])
 summary(LinReg)
 ```
 
-```{r, results='asis', eval=FALSE}
+```{r, results='asis', eval=TRUE}
 library(xtable)
 library(knitr)
 kable(xtable(summary(LinReg)),type='html')
